@@ -32,43 +32,52 @@ require_once('db.php');
 
 <?php
 
-$query = "CALL GetOrders();";
-$result = $con->query($query);
-
-$current_month = "";
-if ($result->num_rows > 0) {
- 
-
-    while ($row = $result->fetch_assoc()) {
-
-        if ($current_month != $row['order_month']) {
-            if ($current_month != "") {
-                echo "</tbody></table>";
+try {
+    $query = "CALL GetOrders();";
+    $result = $con->query($query);
+    
+    $current_month = "";
+    if ($result->num_rows > 0) {
+     
+    
+        while ($row = $result->fetch_assoc()) {
+    
+            if ($current_month != $row['order_month']) {
+                if ($current_month != "") {
+                    echo "</tbody></table>";
+                }
+                $current_month = $row['order_month'];
+                echo "<h2>" . $current_month . "</h2>";
+                echo "<table width=\"800\"><tbody>";
+                echo "<tr>
+                        <th width=\"200\" align=\"left\">Customer</th>
+                        <th width=\"400\" align=\"left\">Products Bought</th>
+                        <th width=\"200\" align=\"right\">Total</th>
+                      </tr>";
             }
-            $current_month = $row['order_month'];
-            echo "<h2>" . $current_month . "</h2>";
-            echo "<table width=\"800\"><tbody>";
+    
             echo "<tr>
-                    <th width=\"200\" align=\"left\">Customer</th>
-                    <th width=\"400\" align=\"left\">Products Bought</th>
-                    <th width=\"200\" align=\"right\">Total</th>
+                    <td valign=\"top\">" . htmlspecialchars($row['customer']) . "</td>
+                    <td>" . $row['products_bought'] . "</td>
+                    <td valign=\"bottom\" align=\"right\">R " . number_format($row['total_spent'], 2) . "</td>
                   </tr>";
         }
-
-        echo "<tr>
-                <td valign=\"top\">" . htmlspecialchars($row['customer']) . "</td>
-                <td>" . $row['products_bought'] . "</td>
-                <td valign=\"bottom\" align=\"right\">R " . number_format($row['total_spent'], 2) . "</td>
-              </tr>";
+    
+        echo "</tbody></table>";
+    } else {
+       
+        echo "<p>There are no results available.</p>";
     }
-
-    echo "</tbody></table>";
-} else {
-   
-    echo "<p>There are no results available.</p>";
+    
+    $con->close();
+} catch (mysqli_sql_exception $th) {
+    echo 'db connection or query failed';
+}catch (\Throwable $th) {
+    echo 'error while processing';
 }
 
-$con->close();
+
+
 ?>
 
 

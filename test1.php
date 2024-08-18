@@ -14,37 +14,43 @@
 */
 ?>
 <?php
-if ( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' ) {
+try {
+    
+    if ( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' ) {
 
-    $to_sort = $_POST[ 'to_sort' ];
-    $error = '';
-    $result = '';
-    if ( empty( $to_sort ) ) {
-        $error = 'field is empty';
+        $to_sort = $_POST[ 'to_sort' ];
+        $error = '';
+        $result = '';
+        if ( empty( $to_sort ) ) {
+            $error = 'field is empty';
+        }
+        
+        $to_sort = trim( $to_sort );
+        $to_sort = preg_replace('/,+/', ',', $to_sort);
+        $to_sort = trim($to_sort, ',');
+        $words = explode( ' ', $to_sort );
+    
+        sort( $words, SORT_NATURAL | SORT_FLAG_CASE );
+    
+        $words_count = count( $words );
+    
+        if ( $words_count > 1 ) {
+    
+            $item = array_pop( $words );
+    
+            $result = implode( ', ', $words ). ' and ' . $item;
+    
+        } else {
+    
+            $result = implode( ', ', $words );
+    
+        }
+    
     }
-	
-    $to_sort = trim( $to_sort );
-	$to_sort = preg_replace('/,+/', ',', $to_sort);
-	$to_sort = trim($to_sort, ',');
-    $words = explode( ' ', $to_sort );
-
-    sort( $words, SORT_NATURAL | SORT_FLAG_CASE );
-
-    $words_count = count( $words );
-
-    if ( $words_count > 1 ) {
-
-        $item = array_pop( $words );
-
-        $result = implode( ', ', $words ). ' and ' . $item;
-
-    } else {
-
-        $result = implode( ', ', $words );
-
-    }
-
+} catch (\Throwable $th) {
+   echo 'error while processing';
 }
+
 
 ?>
 <!DOCTYPE html>
