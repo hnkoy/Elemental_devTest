@@ -1,0 +1,104 @@
+<!--
+QUESTION 4:
+
+With javascript/jquery build a table listing using the data from the customers array (stored in data.js).
+The listing should show the customer's name and age.
+Above the listing add a textbox.
+Entering a value will search all names which contains the entered string.
+When you search for a number range (20-30) it will filter the results based off the customer's age.
+E.g When you search for 20-30 it must list everyone with ages in that range.
+Please make sure your code runs as effectively as it can.
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Test4</title>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+</head>
+
+<body>
+    <h1>Search Customers</h1>
+    <div class="data-container">
+
+        <table width="400">
+            <tbody id="list">
+                <tr>
+                    <th align="left">Customer's name </th>
+                    <th align="right">Age</th>
+                </tr>
+
+
+
+            </tbody>
+        </table>
+        <p>
+            <textarea type="text" rows="4" cols="50" id="search" placeholder="Search by name or age range ex: 20-30 "></textarea>
+        <p id="validation"></p>
+
+        </p>
+
+    </div>
+    <script type="text/javascript">
+        const date = new Date();
+        const currentYear = date.getFullYear();
+        var customerData = [];
+
+        $.each(customers, function (index, customer) {
+            let birthYear = getYearFromDate(customer.birthdate)
+            let item = { name: customer.name, age: (currentYear - birthYear) }
+            customerData.push(item)
+
+        });
+
+        function getList(customers) {
+            $('#list').html(`
+                <tr>
+                    <th align="left">Customer's name</th>
+                    <th align="right">Age</th>
+                </tr>
+            `);
+            $.each(customers, function (index, customer) {
+                $('#list').append(
+                    '<tr>' +
+                    '<td>' + customer.name + '</td>' +
+                    '<td align="right">' + customer.age + '</td>' +
+                    '</tr>'
+                );
+            });
+        }
+
+
+        function getYearFromDate(item) {
+            const vardate = new Date(item);
+            const year = vardate.getFullYear();
+            return year;
+
+        }
+
+        getList(customerData);
+
+        $('#search').on('input', function () {
+            var searchValue = $(this).val().toLowerCase().trim();
+            var filteredCustomers;
+            if (/^\d+\-\d+$/.test(searchValue)) {
+                let [minValue, maxValue] = searchValue.split('-').map(Number);
+                filteredCustomers = customerData.filter(function (customer) {
+                return customer.age >= minValue && customer.age <= maxValue;
+                });
+            } else {
+                filteredCustomers = customerData.filter(function (customer) {
+                    return customer.name.toLowerCase().includes(searchValue);
+                });
+            }
+
+            getList(filteredCustomers);
+        });
+
+        console.log(customerData);
+    </script>
+</body>
+
+</html>
