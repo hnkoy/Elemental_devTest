@@ -20,7 +20,7 @@
 require_once( 'db.php' );
 try {
     $products = [];
-    $result = $con->query( 'CALL GetProduct();' );
+    $result = $con->query( 'CALL GetProducts();' );
 
     if ( mysqli_num_rows( $result ) > 0 ) {
         while ( $row = mysqli_fetch_assoc( $result ) ) {
